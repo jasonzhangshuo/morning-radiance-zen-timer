@@ -268,6 +268,18 @@ const App: React.FC = () => {
             )}
           </>
         )}
+
+        {/* Landscape Mode Hint - Rotate to portrait */}
+        {isLandscape && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 animate-pulse">
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md ${
+              isDarkMode ? 'bg-white/10 text-white/70' : 'bg-black/10 text-black/70'
+            }`}>
+              <span className="material-symbols-outlined text-lg">screen_rotation</span>
+              <span className="text-xs font-display tracking-wider">竖屏查看完整界面</span>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Bottom Controls - Hidden in landscape */}
