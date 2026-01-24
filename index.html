@@ -67,13 +67,25 @@
             /* Adaptive scaling for very small windows */
             @media (max-width: 480px) {
                 .immersive-timer {
-                    font-size: clamp(4rem, 40vw, 16rem);
+                    font-size: clamp(5rem, 35vw, 14rem);
+                }
+            }
+            /* Extra small phones */
+            @media (max-width: 360px) {
+                .immersive-timer {
+                    font-size: clamp(4rem, 32vw, 12rem);
                 }
             }
             /* Adaptive scaling for wide but short windows */
             @media (min-aspect-ratio: 16/9) and (max-height: 600px) {
                 .immersive-timer {
                     font-size: clamp(5rem, 18vh, 20rem);
+                }
+            }
+            /* Landscape mobile phones */
+            @media (max-height: 500px) and (orientation: landscape) {
+                .immersive-timer {
+                    font-size: clamp(4rem, 15vh, 16rem);
                 }
             }
             .immersive-timer-dark {

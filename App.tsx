@@ -250,18 +250,18 @@ const App: React.FC = () => {
         />
 
         {isOvertime ? (
-          <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'} -mt-4 sm:-mt-8 md:-mt-12 flex flex-col items-center gap-2`}>
-            <h2 className="font-calligraphy text-2xl sm:text-3xl md:text-4xl font-light text-[#d4af37] tracking-[0.5em] text-center drop-shadow-sm">
+          <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'} -mt-2 sm:-mt-4 md:-mt-8 lg:-mt-12 flex flex-col items-center gap-1.5 sm:gap-2 px-4`}>
+            <h2 className="font-calligraphy text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-[#d4af37] tracking-[0.3em] sm:tracking-[0.4em] md:tracking-[0.5em] text-center drop-shadow-sm">
               随喜学长分享
             </h2>
-            <div className="flex items-center gap-2 text-[#d4af37]/60">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[#d4af37]/60">
               <span className="material-symbols-outlined text-xs sm:text-sm">schedule</span>
-              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-medium font-display">超时进行中</span>
+              <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.3em] sm:tracking-[0.4em] font-medium font-display">超时进行中</span>
             </div>
           </div>
         ) : (
-          <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
-            <h2 className={`font-calligraphy text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.5em] text-center drop-shadow-lg mt-4 sm:mt-6 md:mt-8 ${
+          <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'} px-4 sm:px-6 md:px-8`}>
+            <h2 className={`font-calligraphy text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-[0.3em] sm:tracking-[0.4em] md:tracking-[0.5em] text-center drop-shadow-lg mt-2 sm:mt-4 md:mt-6 lg:mt-8 ${
               isDarkMode ? 'text-slate-300' : 'text-slate-600'
             }`}>
               {zenQuote}
