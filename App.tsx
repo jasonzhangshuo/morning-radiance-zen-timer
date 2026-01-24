@@ -23,35 +23,27 @@ const App: React.FC = () => {
   const [zenQuote, setZenQuote] = useState<string>(() => ZEN_QUOTES[Math.floor(Math.random() * ZEN_QUOTES.length)]);
   const [isOvertime, setIsOvertime] = useState<boolean>(false);
   const [overtimeSeconds, setOvertimeSeconds] = useState<number>(0);
-  const [viewportScale, setViewportScale] = useState<number>(1);
+  const [isLandscape, setIsLandscape] = useState<boolean>(false);
   const uiTimeoutRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentBg = BACKGROUNDS[bgIndex];
 
-  // Dynamic viewport scaling based on window size
+  // Detect landscape mode for minimal UI
   useEffect(() => {
-    const updateScale = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const minDimension = Math.min(width, height);
-      
-      // Calculate scale based on viewport size
-      // Base scale for 1920x1080, adjust proportionally
-      let scale = 1;
-      if (minDimension < 600) {
-        scale = minDimension / 600;
-      } else if (minDimension < 900) {
-        scale = 0.8 + (minDimension - 600) / 1500;
-      }
-      
-      setViewportScale(scale);
-      document.documentElement.style.setProperty('--viewport-scale', scale.toString());
+    const checkOrientation = () => {
+      const isLandscapeMode = window.innerWidth > window.innerHeight && window.innerHeight < 600;
+      setIsLandscape(isLandscapeMode);
     };
 
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
   }, []);
 
   // Initialize audio on mount
@@ -224,21 +216,25 @@ const App: React.FC = () => {
         }`}></div>
       </div>
 
-      {/* Top Header */}
-      <Header 
-        visible={showUI}
-        isDarkMode={isDarkMode}
-        onBgChange={changeBackground} 
-        onFullscreen={toggleFullscreen} 
-      />
+      {/* Top Header - Hidden in landscape */}
+      {!isLandscape && (
+        <Header 
+          visible={showUI}
+          isDarkMode={isDarkMode}
+          onBgChange={changeBackground} 
+          onFullscreen={toggleFullscreen} 
+        />
+      )}
 
-      {/* Mode Switcher */}
-      <ModeSwitcher 
-        visible={showUI}
-        isDarkMode={isDarkMode}
-        currentMode={mode} 
-        onModeChange={handleModeChange}
-      />
+      {/* Mode Switcher - Hidden in landscape */}
+      {!isLandscape && (
+        <ModeSwitcher 
+          visible={showUI}
+          isDarkMode={isDarkMode}
+          currentMode={mode} 
+          onModeChange={handleModeChange}
+        />
+      )}
 
       {/* Central Content */}
       <main className="relative z-10 flex flex-col items-center justify-center">
@@ -249,44 +245,52 @@ const App: React.FC = () => {
           overtimeSeconds={overtimeSeconds}
         />
 
-        {isOvertime ? (
-          <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'} -mt-2 sm:-mt-4 md:-mt-8 lg:-mt-12 flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2 px-4`}>
-            <h2 className="font-calligraphy text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#d4af37] tracking-[0.3em] sm:tracking-[0.4em] md:tracking-[0.5em] text-center drop-shadow-sm">
-              随喜学长分享
-            </h2>
-            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 text-[#d4af37]/60">
-              <span className="material-symbols-outlined text-xs sm:text-sm">schedule</span>
-              <span className="text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] font-medium font-display">超时进行中</span>
-            </div>
-          </div>
-        ) : (
-          <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'} px-4 sm:px-6 md:px-8`}>
-            <h2 className={`font-calligraphy text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] lg:tracking-[0.5em] text-center drop-shadow-lg mt-1 sm:mt-2 md:mt-4 lg:mt-6 xl:mt-8 ${
-              isDarkMode ? 'text-slate-300' : 'text-slate-600'
-            }`}>
-              {zenQuote}
-            </h2>
-          </div>
+        {!isLandscape && (
+          <>
+            {isOvertime ? (
+              <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'} -mt-4 sm:-mt-8 md:-mt-12 flex flex-col items-center gap-2`}>
+                <h2 className="font-calligraphy text-2xl sm:text-3xl md:text-4xl font-light text-[#d4af37] tracking-[0.5em] text-center drop-shadow-sm">
+                  随喜学长分享
+                </h2>
+                <div className="flex items-center gap-2 text-[#d4af37]/60">
+                  <span className="material-symbols-outlined text-xs sm:text-sm">schedule</span>
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-medium font-display">超时进行中</span>
+                </div>
+              </div>
+            ) : (
+              <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
+                <h2 className={`font-calligraphy text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.5em] text-center drop-shadow-lg mt-4 sm:mt-6 md:mt-8 ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                }`}>
+                  {zenQuote}
+                </h2>
+              </div>
+            )}
+          </>
         )}
       </main>
 
-      {/* Bottom Controls */}
-      <Controls 
-        visible={showUI}
-        isDarkMode={isDarkMode}
-        isActive={isActive} 
-        onToggle={toggleTimer} 
-        onReset={resetTimer}
-        onAddMinute={addOneMinute}
-        onThemeToggle={toggleTheme}
-      />
+      {/* Bottom Controls - Hidden in landscape */}
+      {!isLandscape && (
+        <Controls 
+          visible={showUI}
+          isDarkMode={isDarkMode}
+          isActive={isActive} 
+          onToggle={toggleTimer} 
+          onReset={resetTimer}
+          onAddMinute={addOneMinute}
+          onThemeToggle={toggleTheme}
+        />
+      )}
 
-      {/* Footer Branding */}
-      <Footer 
-        visible={showUI}
-        isDarkMode={isDarkMode}
-        location={currentBg.location} 
-      />
+      {/* Footer Branding - Hidden in landscape */}
+      {!isLandscape && (
+        <Footer 
+          visible={showUI}
+          isDarkMode={isDarkMode}
+          location={currentBg.location} 
+        />
+      )}
 
       {/* Decorative Ink Element */}
       <div className={`absolute -bottom-40 -left-40 w-[800px] h-[800px] opacity-[0.03] pointer-events-none rotate-12 ${isDarkMode ? 'invert' : ''}`} style={{ backgroundImage: `url('https://picsum.photos/id/10/800/800')`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', mixBlendMode: 'overlay' }}></div>
