@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zen Timer: Morning Radiance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&amp;family=Noto+Serif+SC:wght@200;400;500&amp;family=Ma+Shan+Zheng&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d97706", // Adjusted gold for light theme visibility
+                        "zen-bg": "#f8fafc",
+                        "zen-slate": "#475569",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "serif": ["'Noto Serif SC'", "serif"],
+                        "calligraphy": ["'Ma+Shan+Zheng'", "cursive"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .immersive-timer {
+            font-size: 30vw;
+            line-height: 0.9;
+            color: rgba(15, 23, 42, 0.85);
+            text-shadow: 0 4px 60px rgba(255, 255, 255, 0.5), 0 0 120px rgba(0, 0, 0, 0.05);
+        }
+        .ui-chrome-hidden {
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .group:hover .ui-chrome-hidden,
+        .interactive-zone:hover .ui-chrome-hidden {
+            opacity: 1;
+        }
+        .light-mist-overlay {
+            background: linear-gradient(to bottom, 
+                rgba(248, 250, 252, 0.6) 0%, 
+                rgba(241, 245, 249, 0.4) 40%, 
+                rgba(248, 250, 252, 0.8) 100%
+            );
+        }
+        .glow-glyph {
+            text-shadow: 0 0 15px rgba(217, 119, 6, 0.3);
+        }
+        .gold-glow {
+            box-shadow: 0 0 35px rgba(217, 119, 6, 0.15);
+        }
+        .mode-active {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.8);
+            color: #0f172a;
+            font-weight: 500;
+        }
+        .frosted-glass-light {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .vignette-light {
+            background: radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(248,250,252,0.4) 100%);
+        }
+    </style>
+</head>
+<body class="bg-zen-bg font-display text-zen-slate overflow-hidden group">
+<div class="relative h-screen w-full flex items-center justify-center">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-cover bg-center brightness-[1.05] contrast-[0.95] grayscale-[0.2]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgx1ayXH47tzP6bSqL32KveaOKdNd9Sl_ZY6HD5wgTcTEWIuPoOn9U7OUqQuduzsI1b7Ntkt8PW6Ga7RQBNQa0TdNP1NyJBrgvKO0olydi4EC8kh6F2Ll4PYrMvxJsg1zr2iDak_bUMTVJkL0CNcJrYktNRkAadZspzerddTnw1OXkuK-5SRHj3ZxNe9env3_VdxAfh7o_-bdAl1Z9rRAKjgsMwbNUaURHKfn7NmPwhcpgeCzbehQAwoor2s2PRv52Jwb84_RlM0JQ');"></div>
+<div class="absolute inset-0 light-mist-overlay mix-blend-screen"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-zen-bg/90 via-transparent to-white/40"></div>
+<div class="absolute inset-0 vignette-light"></div>
+<div class="absolute top-10 right-20 w-96 h-96 bg-amber-200/10 blur-[120px] rounded-full"></div>
+</div>
+<div class="ui-chrome-hidden absolute top-12 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center">
+<div class="frosted-glass-light flex p-1 rounded-full gap-1 shadow-xl">
+<button class="mode-active px-10 py-2.5 rounded-full font-serif text-sm tracking-[0.2em] transition-all duration-500">
+                    主分享 (5:00)
+                </button>
+<button class="px-10 py-2.5 rounded-full font-serif text-sm tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-all duration-500">
+                    补充分享 (3:00)
+                </button>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
+<div class="immersive-timer font-display font-light tracking-tighter select-none">
+                05:00
+            </div>
+<div class="ui-chrome-hidden mt-12"> 
+<h2 class="font-calligraphy text-4xl font-light text-slate-600 tracking-[0.5em] text-center drop-shadow-sm">观照 · 呼吸</h2>
+</div>
+</div>
+<header class="ui-chrome-hidden absolute top-0 w-full flex items-center justify-between px-16 py-10 z-30">
+<div class="flex flex-col gap-1">
+<h1 class="font-calligraphy text-3xl font-light tracking-widest text-slate-800/90">晨曦</h1>
+<span class="text-[9px] uppercase tracking-[0.6em] font-display text-slate-400 font-medium">Morning Radiance</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-primary hover:bg-primary/10 transition-all duration-500 gold-glow">
+<span class="material-symbols-outlined text-xl">landscape</span>
+<span class="text-[10px] uppercase tracking-[0.2em] font-medium font-display">切换背景</span>
+</button>
+<button class="flex items-center justify-center size-9 rounded-full bg-primary/5 border border-primary/20 text-primary hover:bg-primary/10 transition-all duration-500 gold-glow">
+<span class="material-symbols-outlined text-xl">fullscreen</span>
+</button>
+</div>
+</header>
+<div class="interactive-zone absolute inset-x-0 bottom-0 h-1/3 z-40 flex items-center justify-center pointer-events-none">
+<div class="ui-chrome-hidden flex flex-col items-center gap-12 pointer-events-auto">
+<button class="gold-glow flex items-center justify-center size-14 bg-primary/90 hover:bg-primary border border-white/40 rounded-full transition-all duration-500 group/btn shadow-lg">
+<span class="material-symbols-outlined text-white font-bold">add</span>
+</button>
+<div class="flex items-center gap-20">
+<button class="hover:scale-110 transition-transform duration-500 group/nav">
+<span class="material-symbols-outlined text-slate-400 group-hover/nav:text-slate-900 text-3xl">refresh</span>
+</button>
+<button class="size-28 rounded-full border border-slate-200 flex items-center justify-center bg-white/40 hover:bg-white/80 hover:border-slate-300 transition-all duration-500 shadow-xl backdrop-blur-md">
+<span class="material-symbols-outlined text-6xl text-slate-800" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="hover:scale-110 transition-transform duration-500 group/nav">
+<span class="material-symbols-outlined text-primary/80 group-hover/nav:text-primary text-3xl glow-glyph" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+</button>
+</div>
+</div>
+</div>
+<footer class="ui-chrome-hidden absolute bottom-0 w-full px-16 py-10 flex justify-between items-end z-30 pointer-events-none">
+<div class="flex items-center gap-4 text-[10px] tracking-[0.4em] text-slate-400 uppercase font-medium">
+<div class="size-1.5 bg-primary rounded-full shadow-[0_0_12px_rgba(217,119,6,0.4)]"></div>
+                Embracing the Dawn
+            </div>
+<div class="font-calligraphy text-xl text-slate-400 tracking-widest">
+                Mountain Retreat • 山居
+            </div>
+</footer>
+<div class="absolute -bottom-40 -left-40 w-[800px] h-[800px] opacity-[0.03] pointer-events-none rotate-12" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAZhi_smdrJvClOVNonDYHOsBW8p6kk5GMh_zQ2FJVlyD-oowPykMH4IHDzQqLQ-cC-gIefg8tZXc2In4MVpfK2NpURQWHEbt5tUE7ik3yjcMZBEx9SkUHsqAEX5ryb_4OODXVkHBTq_0jhXDETzj900vR43yvbnOuPsksWVqTSED4dIVvExTSEpTIGxa10ato-1kw6rL7GldqcjBi-rWtDLLQJyLNDpWSty_x7nn1kZ2qnP6VRAcKzkFQg67JwA1W1P7vPk32vFbvx'); background-size: contain; background-repeat: no-repeat;"></div>
+</div>
+
+</body></html>

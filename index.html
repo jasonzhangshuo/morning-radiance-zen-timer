@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>晨曦 Morning Radiance</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Noto+Serif+SC:wght@200;400;500&family=Ma+Shan+Zheng&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d97706",
+                        "night-deep": "#0f172a",
+                        "night-indigo": "#1e1b4b",
+                        "night-gray": "#334155",
+                        "zen-bg": "#f8fafc",
+                        "zen-slate": "#475569",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "serif": ["'Noto Serif SC'", "serif"],
+                        "calligraphy": ["'Ma+Shan+Zheng'", "cursive"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --viewport-scale: 1;
+            }
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+            }
+            #root {
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+            }
+        }
+        @layer utilities {
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+            }
+            .immersive-timer {
+                font-size: clamp(8rem, calc(28vw * var(--viewport-scale)), 32rem);
+                line-height: 0.9;
+            }
+            @media (max-width: 640px) {
+                .immersive-timer {
+                    font-size: clamp(6rem, calc(35vw * var(--viewport-scale)), 20rem);
+                }
+            }
+            @media (min-width: 641px) and (max-height: 700px) {
+                .immersive-timer {
+                    font-size: clamp(6rem, 20vh, 24rem);
+                }
+            }
+            /* Adaptive scaling for very small windows */
+            @media (max-width: 480px) {
+                .immersive-timer {
+                    font-size: clamp(4rem, 40vw, 16rem);
+                }
+            }
+            /* Adaptive scaling for wide but short windows */
+            @media (min-aspect-ratio: 16/9) and (max-height: 600px) {
+                .immersive-timer {
+                    font-size: clamp(5rem, 18vh, 20rem);
+                }
+            }
+            .immersive-timer-dark {
+                color: rgba(255, 255, 255, 0.9);
+                text-shadow: 0 4px 60px rgba(0, 0, 0, 0.5), 0 0 120px rgba(255, 255, 255, 0.1);
+            }
+            .immersive-timer-light {
+                color: rgba(15, 23, 42, 0.85);
+                text-shadow: 0 4px 60px rgba(255, 255, 255, 0.5), 0 0 120px rgba(0, 0, 0, 0.05);
+            }
+            .immersive-timer-overtime {
+                color: #d4af37;
+                text-shadow: 0 4px 30px rgba(212, 175, 55, 0.2), 0 0 80px rgba(212, 175, 55, 0.4);
+                animation: pulse-gold 4s ease-in-out infinite;
+            }
+            @keyframes pulse-gold {
+                0%, 100% { 
+                    text-shadow: 0 4px 30px rgba(212, 175, 55, 0.2), 0 0 60px rgba(212, 175, 55, 0.3); 
+                    transform: scale(1); 
+                }
+                50% { 
+                    text-shadow: 0 4px 40px rgba(212, 175, 55, 0.3), 0 0 100px rgba(212, 175, 55, 0.6); 
+                    transform: scale(1.02); 
+                }
+            }
+            .night-mist-overlay {
+                background: linear-gradient(to bottom, 
+                    rgba(15, 23, 42, 0.6) 0%, 
+                    rgba(30, 27, 75, 0.4) 40%, 
+                    rgba(15, 23, 42, 0.8) 100%
+                );
+            }
+            .light-mist-overlay {
+                background: linear-gradient(to bottom, 
+                    rgba(248, 250, 252, 0.6) 0%, 
+                    rgba(241, 245, 249, 0.4) 40%, 
+                    rgba(248, 250, 252, 0.8) 100%
+                );
+            }
+            .glow-glyph {
+                text-shadow: 0 0 15px rgba(217, 119, 6, 0.3);
+            }
+            .gold-glow {
+                box-shadow: 0 0 35px rgba(217, 119, 6, 0.15);
+            }
+            .frosted-glass-dark {
+                background: rgba(15, 23, 42, 0.4);
+                backdrop-filter: blur(25px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .frosted-glass-light {
+                background: rgba(255, 255, 255, 0.6);
+                backdrop-filter: blur(25px);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            .vignette-night {
+                background: radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(15,23,42,0.6) 100%);
+            }
+            .vignette-light {
+                background: radial-gradient(circle at center, rgba(255,255,255,0) 0%, rgba(248,250,252,0.4) 100%);
+            }
+            .overtime-mist-overlay {
+                background: linear-gradient(to bottom, 
+                    rgba(212, 175, 55, 0.3) 0%, 
+                    rgba(255, 200, 100, 0.25) 40%, 
+                    rgba(255, 150, 80, 0.3) 100%
+                );
+            }
+            .vignette-overtime {
+                background: radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(212,175,55,0.25) 100%);
+            }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-night-deep overflow-hidden select-none">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超时功能测试</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #00ff00;
+        }
+        .log {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #00ff00;
+        }
+        .error {
+            color: #ff0000;
+            border-left-color: #ff0000;
+        }
+        .success {
+            color: #00ff00;
+            border-left-color: #00ff00;
+        }
+        .info {
+            color: #ffff00;
+            border-left-color: #ffff00;
+        }
+        #status {
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 10px;
+            background: #2d2d2d;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 超时功能自动化测试</h1>
+    <div id="status">准备测试...</div>
+    <div id="logs"></div>
+
+    <script type="module">
+        const logDiv = document.getElementById('logs');
+        const statusDiv = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            console.log(message);
+        }
+
+        function updateStatus(text) {
+            statusDiv.textContent = text;
+        }
+
+        // 模拟 React 组件的状态和逻辑
+        class TimerSimulator {
+            constructor() {
+                this.isActive = false;
+                this.timeLeft = 5; // 测试用 5 秒
+                this.isOvertime = false;
+                this.overtimeSeconds = 0;
+                this.interval = null;
+            }
+
+            start() {
+                log('▶️ 启动计时器', 'info');
+                this.isActive = true;
+                this.runTimer();
+            }
+
+            runTimer() {
+                if (this.interval) clearInterval(this.interval);
+
+                if (this.isActive && !this.isOvertime && this.timeLeft > 0) {
+                    log(`⏱️ 正常倒计时模式: timeLeft=${this.timeLeft}`, 'info');
+                    this.interval = setInterval(() => {
+                        log(`  倒计时: ${this.timeLeft} -> ${this.timeLeft - 1}`, 'info');
+                        
+                        if (this.timeLeft <= 1) {
+                            log('🔔 时间归零，触发超时模式', 'success');
+                            this.isOvertime = true;
+                            this.overtimeSeconds = 0;
+                            this.timeLeft = 0;
+                            
+                            // 重新启动定时器进入超时模式
+                            clearInterval(this.interval);
+                            this.runTimer();
+                            return;
+                        }
+                        
+                        this.timeLeft--;
+                    }, 1000);
+                } else if (this.isActive && this.isOvertime) {
+                    log('✨ 超时正向计时模式启动', 'success');
+                    this.interval = setInterval(() => {
+                        this.overtimeSeconds++;
+                        log(`  超时计时: ${this.overtimeSeconds} 秒`, 'success');
+                        
+                        if (this.overtimeSeconds >= 5) {
+                            log('✅ 测试完成：超时计时正常工作！', 'success');
+                            this.stop();
+                        }
+                    }, 1000);
+                } else {
+                    log('❌ 错误：无法启动计时器', 'error');
+                    log(`  状态: isActive=${this.isActive}, isOvertime=${this.isOvertime}, timeLeft=${this.timeLeft}`, 'error');
+                }
+            }
+
+            stop() {
+                if (this.interval) {
+                    clearInterval(this.interval);
+                    this.interval = null;
+                }
+                this.isActive = false;
+                updateStatus('✅ 测试完成');
+            }
+        }
+
+        // 运行测试
+        async function runTest() {
+            log('🚀 开始测试超时功能', 'info');
+            updateStatus('🧪 测试进行中...');
+            
+            const timer = new TimerSimulator();
+            timer.start();
+        }
+
+        // 启动测试
+        runTest();
+    </script>
+</body>
+</html>
