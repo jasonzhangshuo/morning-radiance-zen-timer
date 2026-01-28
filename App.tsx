@@ -24,6 +24,8 @@ const App: React.FC = () => {
   const [isOvertime, setIsOvertime] = useState<boolean>(false);
   const [overtimeSeconds, setOvertimeSeconds] = useState<number>(0);
   const [isLandscape, setIsLandscape] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [quoteVisible, setQuoteVisible] = useState<boolean>(true);
   const uiTimeoutRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -45,6 +47,37 @@ const App: React.FC = () => {
       window.removeEventListener('orientationchange', checkOrientation);
     };
   }, []);
+
+  // Detect fullscreen mode
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  // Rotate zen quotes in fullscreen mode every 8 seconds
+  useEffect(() => {
+    if (!isFullscreen || isOvertime) return;
+
+    const rotateQuote = () => {
+      // Fade out
+      setQuoteVisible(false);
+      
+      // Change quote and fade in after 700ms
+      setTimeout(() => {
+        const availableQuotes = ZEN_QUOTES.filter(q => q !== zenQuote);
+        const newQuote = availableQuotes[Math.floor(Math.random() * availableQuotes.length)];
+        setZenQuote(newQuote);
+        setQuoteVisible(true);
+      }, 700);
+    };
+
+    const interval = setInterval(rotateQuote, 8000);
+    return () => clearInterval(interval);
+  }, [isFullscreen, zenQuote, isOvertime]);
 
   // Initialize audio on mount
   useEffect(() => {
@@ -259,9 +292,9 @@ const App: React.FC = () => {
               </div>
             ) : (
               <div className={`transition-all duration-700 ease-in-out transform ${showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
-                <h2 className={`font-calligraphy text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.5em] text-center drop-shadow-lg mt-4 sm:mt-6 md:mt-8 ${
+                <h2 className={`font-calligraphy text-3xl sm:text-4xl md:text-5xl font-light tracking-[0.5em] text-center drop-shadow-lg mt-4 sm:mt-6 md:mt-8 transition-opacity duration-700 ${
                   isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                }`}>
+                } ${quoteVisible ? 'opacity-100' : 'opacity-0'}`}>
                   {zenQuote}
                 </h2>
               </div>
