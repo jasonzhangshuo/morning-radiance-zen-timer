@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import TimerDisplay from './components/TimerDisplay';
 import Controls from './components/Controls';
 import ModeSwitcher from './components/ModeSwitcher';
+import MeditationSanctuary from './components/MeditationSanctuary';
 
 const App: React.FC = () => {
   const initialSeconds = MODES[TimerMode.MAIN].seconds;
@@ -26,6 +27,7 @@ const App: React.FC = () => {
   const [isLandscape, setIsLandscape] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [quoteVisible, setQuoteVisible] = useState<boolean>(true);
+  const [view, setView] = useState<'meditation' | 'timer'>('meditation');
   const uiTimeoutRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -196,6 +198,14 @@ const App: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isActive]);
+
+  if (view === 'meditation') {
+    return (
+      <MeditationSanctuary
+        onEnterTimer={() => setView('timer')}
+      />
+    );
+  }
 
   return (
     <div 
