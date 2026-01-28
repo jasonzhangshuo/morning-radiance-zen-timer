@@ -287,7 +287,7 @@ const App: React.FC = () => {
                 </h2>
                 <div className="flex items-center gap-2 text-[#d4af37]/60">
                   <span className="material-symbols-outlined text-xs sm:text-sm">schedule</span>
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-medium font-display">超时进行中</span>
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-medium font-display">已超时分享</span>
                 </div>
               </div>
             ) : (
