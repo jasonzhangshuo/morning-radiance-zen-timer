@@ -281,7 +281,7 @@ const App: React.FC = () => {
         {!isLandscape && (
           <>
             {isOvertime && overtimeSeconds >= 30 ? (
-              <div className="transition-all duration-700 ease-in-out transform -mt-4 sm:-mt-8 md:-mt-12 flex flex-col items-center gap-2">
+              <div className="transition-all duration-700 ease-in-out transform mt-8 sm:mt-10 md:mt-14 lg:mt-20 flex flex-col items-center gap-2">
                 <h2 className="font-calligraphy text-2xl sm:text-3xl md:text-4xl font-light text-[#d4af37] tracking-[0.5em] text-center drop-shadow-sm">
                   随喜学长分享
                 </h2>
