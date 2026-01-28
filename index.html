@@ -21,6 +21,9 @@
                         "zen-bg": "#f8fafc",
                         "zen-slate": "#475569",
                         "zen-turquoise": "#2dd4bf",
+                        "zen-blue": "#1a365d",
+                        "zen-green": "#064e3b",
+                        "zen-orange": "#7c2d12",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
@@ -160,6 +163,57 @@
             }
             .vignette-overtime {
                 background: radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(212,175,55,0.25) 100%);
+            }
+            /* 首页静心之道 */
+            .landing-scroll {
+                scroll-snap-type: y mandatory;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .landing-scroll::-webkit-scrollbar {
+                display: none;
+            }
+            .landing-chapter {
+                scroll-snap-align: start;
+            }
+            .vignette-landing {
+                background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+            }
+            @keyframes bounce-slow {
+                0%, 100% { transform: translateX(-50%) translateY(0); }
+                50% { transform: translateX(-50%) translateY(8px); }
+            }
+            .animate-bounce-slow {
+                animation: bounce-slow 2.5s ease-in-out infinite;
+            }
+            /* 正念静坐播放器动效 */
+            .vignette {
+                background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+            }
+            @keyframes breathe {
+                0%, 100% { transform: scale(1); opacity: 0.3; filter: blur(40px); }
+                50% { transform: scale(1.4); opacity: 0.6; filter: blur(60px); }
+            }
+            .animate-breathe {
+                animation: breathe 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+            }
+            @keyframes float-particle {
+                0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+                50% { opacity: 0.5; }
+                100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+            }
+            .particle {
+                position: absolute;
+                border-radius: 9999px;
+                pointer-events: none;
+                animation: float-particle var(--duration) linear infinite;
+            }
+            @keyframes ripple-out {
+                0% { transform: scale(1); opacity: 0.8; }
+                100% { transform: scale(2.5); opacity: 0; }
+            }
+            .animate-ripple {
+                animation: ripple-out 4s ease-out infinite;
             }
         }
     </style>

@@ -7,6 +7,7 @@ import TimerDisplay from './components/TimerDisplay';
 import Controls from './components/Controls';
 import ModeSwitcher from './components/ModeSwitcher';
 import MeditationSanctuary from './components/MeditationSanctuary';
+import LandingPage from './components/LandingPage';
 
 const App: React.FC = () => {
   const initialSeconds = MODES[TimerMode.MAIN].seconds;
@@ -27,7 +28,8 @@ const App: React.FC = () => {
   const [isLandscape, setIsLandscape] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [quoteVisible, setQuoteVisible] = useState<boolean>(true);
-  const [view, setView] = useState<'meditation' | 'timer'>('meditation');
+  const [view, setView] = useState<'landing' | 'sanctuary' | 'timer'>('landing');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const uiTimeoutRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -199,15 +201,42 @@ const App: React.FC = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isActive]);
 
-  if (view === 'meditation') {
-    return (
-      <MeditationSanctuary
-        onEnterTimer={() => setView('timer')}
-      />
-    );
-  }
+  const handleBackToHome = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setView('landing');
+      setTimeout(() => setIsTransitioning(false), 300);
+    }, 800);
+  };
 
-  return (
+  const handleEnterSanctuary = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setView('sanctuary');
+      setTimeout(() => setIsTransitioning(false), 300);
+    }, 800);
+  };
+
+  const transitionWrap = (
+    <div className="relative w-full h-screen overflow-hidden bg-black">
+      <div
+        className={`w-full h-full transition-all duration-1000 ease-in-out ${
+          isTransitioning ? 'scale-105 opacity-0 grayscale' : 'scale-100 opacity-100 grayscale-0'
+        }`}
+      >
+        {view === 'landing' && (
+          <LandingPage
+            onEnterSanctuary={handleEnterSanctuary}
+            onEnterTimer={() => setView('timer')}
+          />
+        )}
+        {view === 'sanctuary' && (
+          <MeditationSanctuary
+            onEnterTimer={() => setView('timer')}
+            onBackToHome={handleBackToHome}
+          />
+        )}
+        {view === 'timer' && (
     <div 
       className={`relative h-screen w-full flex items-center justify-center transition-colors duration-1000 overflow-hidden ${isActive && !showUI ? 'cursor-none' : 'cursor-default'}`}
       onMouseMove={handleMouseMove}
@@ -265,7 +294,8 @@ const App: React.FC = () => {
           visible={showUI}
           isDarkMode={isDarkMode}
           onBgChange={changeBackground} 
-          onFullscreen={toggleFullscreen} 
+          onFullscreen={toggleFullscreen}
+          onBackToHome={() => setView('landing')}
         />
       )}
 
@@ -350,7 +380,17 @@ const App: React.FC = () => {
       {/* Decorative Ink Element */}
       <div className={`absolute -bottom-40 -left-40 w-[800px] h-[800px] opacity-[0.03] pointer-events-none rotate-12 ${isDarkMode ? 'invert' : ''}`} style={{ backgroundImage: `url('https://picsum.photos/id/10/800/800')`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', mixBlendMode: 'overlay' }}></div>
     </div>
+        )}
+      </div>
+      <div
+        className={`fixed inset-0 z-[200] bg-black transition-opacity duration-1000 pointer-events-none ${
+          isTransitioning ? 'opacity-80' : 'opacity-0'
+        }`}
+      />
+    </div>
   );
+
+  return transitionWrap;
 };
 
 export default App;

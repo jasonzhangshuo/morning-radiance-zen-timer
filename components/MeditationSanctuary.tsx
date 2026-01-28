@@ -1,55 +1,86 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SANCTUARY_CONTENT, ZEN_AUDIO_URL } from '../zenConstants';
+import { SANCTUARY_CONTENT, ZEN_AUDIO_URL, ZEN_AUDIO_FALLBACK_URL } from '../zenConstants';
 
 interface MeditationSanctuaryProps {
   onEnterTimer: () => void;
+  onBackToHome: () => void;
 }
 
-const MeditationSanctuary: React.FC<MeditationSanctuaryProps> = ({ onEnterTimer }) => {
+function formatTime(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+const MeditationSanctuary: React.FC<MeditationSanctuaryProps> = ({ onEnterTimer, onBackToHome }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [durationSeconds, setDurationSeconds] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const currentPhase = SANCTUARY_CONTENT[0];
+  const progress = durationSeconds > 0 ? Math.min(100, (elapsedSeconds / durationSeconds) * 100) : 0;
 
   useEffect(() => {
-    audioRef.current = new Audio(ZEN_AUDIO_URL);
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0;
+    const audio = new Audio(ZEN_AUDIO_URL);
+    audio.loop = true;
+    audio.volume = 0;
+    audioRef.current = audio;
 
-    const playAudio = async () => {
+    const fadeIn = () => {
+      let vol = 0;
+      const fadeInterval = setInterval(() => {
+        if (!audioRef.current) {
+          clearInterval(fadeInterval);
+          return;
+        }
+        if (vol < 0.5) {
+          vol += 0.05;
+          audioRef.current!.volume = vol;
+        } else {
+          clearInterval(fadeInterval);
+        }
+      }, 100);
+    };
+
+    const tryPlay = async () => {
       try {
         await audioRef.current?.play();
         setIsPlaying(true);
-
-        let vol = 0;
-        const fadeInterval = setInterval(() => {
-          if (!audioRef.current) {
-            clearInterval(fadeInterval);
-            return;
-          }
-          if (vol < 0.5) {
-            vol += 0.05;
-            audioRef.current.volume = vol;
-          } else {
-            clearInterval(fadeInterval);
-          }
-        }, 100);
+        fadeIn();
       } catch (err) {
         console.error('Autoplay failed:', err);
       }
     };
 
-    playAudio();
+    const onError = () => {
+      if (!audioRef.current) return;
+      audioRef.current.src = ZEN_AUDIO_FALLBACK_URL;
+      audioRef.current.load();
+      tryPlay();
+    };
 
-    const interval = setInterval(() => {
-      if (audioRef.current && !audioRef.current.paused) {
-        setProgress((prev) => (prev >= 100 ? 0 : prev + 0.02));
-      }
-    }, 100);
+    const syncTime = () => {
+      if (!audioRef.current) return;
+      const current = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      setElapsedSeconds(current);
+      if (Number.isFinite(duration) && duration > 0) setDurationSeconds(duration);
+    };
+
+    audio.addEventListener('error', onError);
+    audio.addEventListener('timeupdate', syncTime);
+    audio.addEventListener('loadedmetadata', syncTime);
+    tryPlay();
+
+    const interval = setInterval(syncTime, 500);
 
     return () => {
       clearInterval(interval);
+      audio.removeEventListener('error', onError);
+      audio.removeEventListener('timeupdate', syncTime);
+      audio.removeEventListener('loadedmetadata', syncTime);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -83,6 +114,29 @@ const MeditationSanctuary: React.FC<MeditationSanctuaryProps> = ({ onEnterTimer 
         <div className="absolute inset-0 vignette" />
       </div>
 
+      {/* 环境粒子层 */}
+      <div className="absolute inset-0 z-[5] pointer-events-none opacity-40">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="particle bg-zen-turquoise/40"
+            style={{
+              left: `${Math.random() * 100}%`,
+              bottom: '-20px',
+              width: `${Math.random() * 2 + 1}px`,
+              height: `${Math.random() * 2 + 1}px`,
+              ['--duration' as string]: `${Math.random() * 15 + 15}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* 动态呼吸光晕 */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[1]">
+        <div className={`absolute w-[450px] h-[450px] rounded-full bg-zen-turquoise/10 blur-[80px] transition-opacity duration-1000 ${isPlaying ? 'animate-breathe' : 'opacity-0'}`} />
+        <div className={`absolute w-[300px] h-[300px] rounded-full bg-blue-500/10 blur-[50px] transition-opacity duration-1000 ${isPlaying ? 'animate-breathe' : 'opacity-0'}`} style={{ animationDelay: '-4s' }} />
+      </div>
+
       {/* 控制头部 */}
       <header className="fixed top-8 left-8 z-50">
         <h1 className="font-calligraphy text-xl tracking-[0.4em] text-white/70">正念静坐</h1>
@@ -101,10 +155,10 @@ const MeditationSanctuary: React.FC<MeditationSanctuaryProps> = ({ onEnterTimer 
         <span className="text-[9px] tracking-[0.4em] uppercase">进入课程倒计时</span>
       </button>
 
-      {/* 关闭按钮（同样进入倒计时） */}
+      {/* 关闭按钮：返回首页 */}
       <div className="fixed top-8 right-8 z-50">
         <button
-          onClick={onEnterTimer}
+          onClick={onBackToHome}
           className="group p-2 flex items-center gap-3 border border-white/10 rounded-full backdrop-blur-xl hover:bg-white/5 transition-all pointer-events-auto"
         >
           <span className="material-symbols-outlined text-xl font-light text-white/60 group-hover:text-white">
@@ -163,22 +217,42 @@ const MeditationSanctuary: React.FC<MeditationSanctuaryProps> = ({ onEnterTimer 
           </svg>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {/* 呼吸波纹（播放时扩散） */}
+            <div className={`absolute inset-0 flex items-center justify-center ${isPlaying ? 'opacity-100' : 'opacity-30'}`}>
+              <div className={`size-48 rounded-full border border-zen-turquoise/20 transition-all duration-1000 ${isPlaying ? 'animate-ripple' : ''}`} />
+              <div className={`absolute size-48 rounded-full border border-zen-turquoise/10 transition-all duration-1000 ${isPlaying ? 'animate-ripple' : ''}`} style={{ animationDelay: '2s' }} />
+            </div>
             <div className="size-20 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-zen-turquoise/40 transition-all duration-500 z-10">
-              <span className="material-symbols-outlined text-4xl text-white/70 group-hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-4xl text-white/60 group-hover:text-white transition-colors">
                 {isPlaying ? 'pause' : 'play_arrow'}
               </span>
             </div>
             <div className="mt-6 text-center z-10">
-              <span className="text-[10px] tracking-[0.4em] text-white/40 uppercase block mb-1">
-                Duration
+              <span className="text-[10px] tracking-[0.4em] text-white/30 uppercase block mb-1">
+                播放进度
               </span>
-              <span className="text-white/70 font-serif tracking-widest tabular-nums text-sm">
-                {currentPhase.duration}
+              <span className="text-white/50 font-serif tracking-widest tabular-nums text-sm">
+                {formatTime(elapsedSeconds)} / {durationSeconds > 0 ? formatTime(durationSeconds) : currentPhase.duration}
               </span>
             </div>
           </div>
         </div>
       </main>
+
+      {/* 底部装饰 */}
+      <footer className="fixed bottom-12 w-full px-8 sm:px-16 z-50 flex justify-between items-end pointer-events-none">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <div className="h-px w-8 bg-zen-turquoise/40" />
+            <span className="text-[8px] tracking-[0.5em] text-white/40 uppercase">Natural Resonance</span>
+          </div>
+          <span className="text-[10px] text-white/20 font-light">432Hz Healing Frequency</span>
+        </div>
+        <div className="font-calligraphy text-2xl sm:text-3xl text-white/5 tracking-[0.5em]">心无挂碍</div>
+      </footer>
+
+      {/* 纹理遮罩 */}
+      <div className="pointer-events-none fixed inset-0 z-[60] opacity-[0.06] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
     </div>
   );
 };

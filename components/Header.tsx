@@ -6,12 +6,27 @@ interface HeaderProps {
   isDarkMode: boolean;
   onBgChange: () => void;
   onFullscreen: () => void;
+  onBackToHome?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ visible, isDarkMode, onBgChange, onFullscreen }) => {
+const Header: React.FC<HeaderProps> = ({ visible, isDarkMode, onBgChange, onFullscreen, onBackToHome }) => {
   return (
     <header className={`absolute top-0 w-full flex items-center justify-between px-4 sm:px-8 md:px-16 py-4 sm:py-6 md:py-8 z-30 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
-      <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-3 sm:gap-4">
+        {onBackToHome && (
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border transition-all duration-500 ${
+              isDarkMode
+                ? 'border-white/20 text-white/70 hover:bg-white/10 hover:text-white'
+                : 'border-slate-300/50 text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg sm:text-xl">home</span>
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium font-display">回到首页</span>
+          </button>
+        )}
         <h1 className={`font-serif text-xl sm:text-2xl md:text-3xl font-medium tracking-[0.3em] ${
           isDarkMode ? 'text-white/90' : 'text-slate-800/90'
         }`}>课程交流</h1>
